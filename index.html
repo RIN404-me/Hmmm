@@ -510,25 +510,26 @@ const lyrics = [
 
 function startAutoMusic() {
   const ld = document.getElementById('lyric-line');
+
   ld.style.position = 'fixed';
-  ld.style.bottom = '120px'; 
-  ld.style.left = '50%';
-  ld.style.transform = 'translateX(-50%)';
-  ld.style.zIndex = '9999'; 
-  ld.style.color = 'rgba(255, 45, 107, 0.5)';
-  ld.style.textShadow = '0 0 8px rgba(255, 45, 107, 0.3)';
-  ld.style.fontSize = '24px';
-  ld.style.textAlign = 'center';
-  ld.style.width = '90%';
-  ld.style.pointerEvents = 'none'; 
-  ld.style.transition = 'opacity 0.4s ease-in-out'; 
-  
+  ld.style.left = 'auto';
+  ld.style.transform = 'none';
+  ld.style.bottom = '80px';
+  ld.style.right = '10px';
+  ld.style.zIndex = '9999';
+  ld.style.color = 'rgba(255, 45, 107, 0.7)';
+  ld.style.textShadow = '0 0 5px rgba(255, 45, 107, 0.4)';
+  ld.style.fontSize = '13px';
+  ld.style.textAlign = 'right';
+  ld.style.width = 'auto';
+  ld.style.maxWidth = '70%';
+  ld.style.pointerEvents = 'none';
+  ld.style.transition = 'opacity 0.4s ease-in-out';
 
   ld.style.display = 'block';
   setTimeout(() => {
       ld.style.opacity = '1';
   }, 10);
-  
   scheduleLyrics();
 }
 
