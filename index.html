@@ -509,12 +509,29 @@ const lyrics = [
 ];
 
 function startAutoMusic() {
-  
   const ld = document.getElementById('lyric-line');
+  
+  // --- BULLETPROOF CSS INJECTION ---
+  // This forces the lyrics to float on the screen no matter what
+  ld.style.position = 'fixed';
+  ld.style.bottom = '120px'; // Keeps it floating above the bottom
+  ld.style.left = '50%';
+  ld.style.transform = 'translateX(-50%)';
+  ld.style.zIndex = '9999'; // Forces it to the very front layer
+  ld.style.color = '#ff2d6b'; // Hot pink color
+  ld.style.textShadow = '0 0 10px #ff2d6b'; // Pink glow
+  ld.style.fontSize = '24px';
+  ld.style.textAlign = 'center';
+  ld.style.width = '90%';
+  ld.style.pointerEvents = 'none'; // Prevents it from blocking your clicks
+  ld.style.transition = 'opacity 0.4s ease-in-out'; // Smooth fade
+  // ---------------------------------
+
   ld.style.display = 'block';
   setTimeout(() => {
       ld.style.opacity = '1';
   }, 10);
+  
   scheduleLyrics();
 }
 
