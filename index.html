@@ -100,10 +100,8 @@
     width: 100%; background: transparent;
     border: 1px solid var(--rose); color: var(--rose);
     font-family: 'Cinzel Decorative', serif; font-size: 0.65rem;
-    letter-spacing: 0.3em; padding: 16px; border-radius: 2px;
+    letter-spacing: 0.3em; padding: 13px; border-radius: 2px;
     cursor: pointer; text-transform: uppercase;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
     transition: background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.2s;
   }
   .login-btn:hover { background: var(--rose); color: #fff; box-shadow: 0 0 28px rgba(255,45,107,0.5); transform: translateY(-2px); }
@@ -321,7 +319,7 @@
     <p class="login-eyebrow">✦ ??? ✦</p>
     <h2 class="login-title">???</h2>
     <input class="login-input" id="login-pass" type="password" placeholder="enter the password..." autocomplete="off" maxlength="30">
-    <button class="login-btn" onclick="tryLogin()" type="button">Enter ✦</button>
+    <button class="login-btn" onclick="tryLogin()">Enter ✦</button>
     <p class="login-error" id="login-error">&nbsp;</p>
     <p class="login-hint">♡ Hint: "YOU" are the password</p>
   </div>
