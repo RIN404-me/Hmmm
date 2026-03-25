@@ -100,15 +100,17 @@
     width: 100%; background: transparent;
     border: 1px solid var(--rose); color: var(--rose);
     font-family: 'Cinzel Decorative', serif; font-size: 0.65rem;
-    letter-spacing: 0.3em; padding: 13px; border-radius: 2px;
+    letter-spacing: 0.3em; padding: 16px; border-radius: 2px;
     cursor: pointer; text-transform: uppercase;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     transition: background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.2s;
   }
   .login-btn:hover { background: var(--rose); color: #fff; box-shadow: 0 0 28px rgba(255,45,107,0.5); transform: translateY(-2px); }
   .login-error { margin-top: 14px; font-style: italic; font-size: 0.88rem; color: var(--rose); text-shadow: 0 0 10px var(--rose); min-height: 1.2em; }
   .login-hint { margin-top: 18px; font-style: italic; font-size: 0.82rem; color: rgba(232,221,245,0.2); }
 
-  /* 
+  /*
      MAIN CONTENT
  */
   #main-content { display: none; }
@@ -186,7 +188,7 @@
   }
   .poem-line:hover .first, .poem-line.touched .first { color: var(--gold); text-shadow: 0 0 20px var(--gold); }
 
- 
+
   .acrostic-reveal {
     position: relative; z-index: 1; text-align: center;
     margin: 0 auto 70px; padding: 0 24px; max-width: 500px;
@@ -319,7 +321,7 @@
     <p class="login-eyebrow">✦ ??? ✦</p>
     <h2 class="login-title">???</h2>
     <input class="login-input" id="login-pass" type="password" placeholder="enter the password..." autocomplete="off" maxlength="30">
-    <button class="login-btn" onclick="tryLogin()">Enter ✦</button>
+    <button class="login-btn" onclick="tryLogin()" type="button">Enter ✦</button>
     <p class="login-error" id="login-error">&nbsp;</p>
     <p class="login-hint">♡ Hint: "YOU" are the password</p>
   </div>
@@ -387,6 +389,10 @@
 </audio>
 
 <script type="module">
+/* FIREBASE IMPORTS */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 /*  LOGIN  */
 let currentUser = null;
 
@@ -547,9 +553,6 @@ function toggleMusic() {
 
 
 /* COMMENTS */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyCzqdykpzMvJcyqwGeHz3-ezWIwfE3R07A",
   authDomain: "secret-4b894.firebaseapp.com",
@@ -612,6 +615,8 @@ onSnapshot(q, (snapshot) => {
 
 window.postComment = postComment;
 window.react = react;
+window.tryLogin = tryLogin;
+window.toggleMusic = toggleMusic;
 </script>
 </body>
 </html>
