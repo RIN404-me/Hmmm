@@ -511,16 +511,12 @@ const lyrics = [
 ];
 
 function startAutoMusic() {
-  // 1. audio.play() is removed from here because it is now inside tryLogin()
   
   const ld = document.getElementById('lyric-line');
   ld.style.display = 'block';
-  
-  // 2. This tiny delay forces the initial CSS fade-in to trigger
   setTimeout(() => {
       ld.style.opacity = '1';
   }, 10);
-
   scheduleLyrics();
 }
 
@@ -530,19 +526,27 @@ function scheduleLyrics() {
 
   function checkTime() {
     const now = audio.currentTime;
+    
     // Find the current lyric based on timestamp
     let current = null;
     for (let i = lyrics.length - 1; i >= 0; i--) {
       if (now >= lyrics[i].t) { current = lyrics[i]; break; }
     }
     
-    // If a new lyric is found, fade out, change text, and fade back in
+    // If a new lyric is found...
     if (current && ld.dataset.last !== current.text) {
+      
+      // 1. UPDATE THE TRACKER IMMEDIATELY!
+      // This stops the animation frame from looping this over and over.
+      ld.dataset.last = current.text;
+      
+      // 2. Fade out the old lyric
       ld.style.opacity = '0';
+      
+      // 3. Wait for the fade-out, then change text and fade back in
       setTimeout(() => {
         ld.textContent = current.text;
         ld.style.opacity = '1';
-        ld.dataset.last = current.text;
       }, 400);
     }
     requestAnimationFrame(checkTime);
