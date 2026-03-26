@@ -391,7 +391,7 @@
 <script type="module">
 /* FIREBASE IMPORTS */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, doc, updateDoc, increment, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 /*  LOGIN  */
 let currentUser = null;
@@ -417,10 +417,11 @@ function tryLogin() {
   if (val === 'rain' || val === 'angel') {
     if (val === 'rain') currentUser = 'Rain';
     if (val === 'angel') currentUser = 'Angel';
+    localStorage.setItem('confession_user', currentUser);
     const audio = document.getElementById('yt-player');
     audio.volume = 0.3;
     audio.play().catch(error => console.log("Audio blocked:", error));
-    enterSite(); 
+    enterSite();
   } else {
     err.textContent = 'wrong password ✦ try again';
     document.getElementById('login-pass').value = '';
@@ -442,9 +443,9 @@ function enterSite() {
   }, 1050);
 }
 
-/* MAIN INIT  */
+/* MAIN INIT */
 function initMain() {
-  // Stars
+  //Stars
   (function seedStars(id, count) {
     const el = document.getElementById(id);
     for (let i = 0; i < count; i++) {
@@ -455,8 +456,7 @@ function initMain() {
       el.appendChild(s);
     }
   })('stars-main', 180);
-
-  // Floating hearts
+  // Floating Hearts
   const hColors = ['#ff2d6b','#b94fff','#ff85b3','#ffd700','#00ffe0'];
   const hChars  = ['♥','❤','♡','💗','💕'];
   for (let i = 0; i < 22; i++) {
@@ -466,19 +466,17 @@ function initMain() {
     h.style.cssText=`left:${Math.random()*100}%;color:${hColors[Math.floor(Math.random()*hColors.length)]};font-size:${10+Math.random()*14}px;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*12}s;text-shadow:0 0 8px currentColor;filter:drop-shadow(0 0 4px currentColor);`;
     document.body.appendChild(h);
   }
-
-  // scroll effects
+  //Scroll effects
   const acrostic = document.getElementById('acrostic');
   new IntersectionObserver(e => { if(e[0].isIntersecting) acrostic.classList.add('visible'); }, {threshold:0.4}).observe(acrostic);
 
-  // Touch glow
+  //Touch glow
   document.querySelectorAll('.poem-line').forEach(line => {
     line.addEventListener('touchstart', () => {
       line.classList.add('touched');
       setTimeout(() => line.classList.remove('touched'), 1500);
     }, {passive:true});
   });
-
   // extra effects
   const spC = ['#ff2d6b','#b94fff','#00ffe0','#ffd700','#ff85b3'];
   let lastSp = 0;
@@ -510,7 +508,6 @@ const lyrics = [
 
 function startAutoMusic() {
   const ld = document.getElementById('lyric-line');
-
   ld.style.position = 'fixed';
   ld.style.left = 'auto';
   ld.style.transform = 'none';
@@ -525,36 +522,23 @@ function startAutoMusic() {
   ld.style.maxWidth = '70%';
   ld.style.pointerEvents = 'none';
   ld.style.transition = 'opacity 0.4s ease-in-out';
-
   ld.style.display = 'block';
-  setTimeout(() => {
-      ld.style.opacity = '1';
-  }, 10);
+  setTimeout(() => { ld.style.opacity = '1'; }, 10);
   scheduleLyrics();
 }
 
 function scheduleLyrics() {
   const audio = document.getElementById('yt-player');
   const ld = document.getElementById('lyric-line');
-
   function checkTime() {
     const now = audio.currentTime;
-    
-    
     let current = null;
     for (let i = lyrics.length - 1; i >= 0; i--) {
       if (now >= lyrics[i].t) { current = lyrics[i]; break; }
     }
-    
-    
     if (current && ld.dataset.last !== current.text) {
-      
-      
       ld.dataset.last = current.text;
-      
-      
       ld.style.opacity = '0';
-      
       setTimeout(() => {
         ld.textContent = current.text;
         ld.style.opacity = '1';
@@ -577,8 +561,6 @@ function toggleMusic() {
     document.getElementById('music-text').textContent = 'pause music';
   }
 }
-
-
 
 /* COMMENTS */
 const firebaseConfig = {
@@ -635,11 +617,70 @@ function renderComments(docs) {
     </div>`).join('');
 }
 
-const q = query(collection(db, 'comments'), orderBy('id', 'desc'));
-onSnapshot(q, (snapshot) => {
+/* Notification (Rain) */
+let isFirstLoad = true;
+onSnapshot(query(collection(db, 'comments'), orderBy('id', 'desc')), (snapshot) => {
   const docs = snapshot.docs.map(d => ({ docId: d.id, ...d.data() }));
   renderComments(docs);
+
+  if (!isFirstLoad && currentUser === 'Rain') {
+    snapshot.docChanges().forEach(change => {
+      if (change.type === 'added') {
+        const data = change.doc.data();
+        if (data.name === 'Angel') {
+          const notif = document.createElement('div');
+          notif.style.cssText = `
+            position: fixed; bottom: 30px; right: 20px;
+            background: rgba(5,5,8,0.95); border: 1px solid rgba(0,255,224,0.5);
+            border-radius: 8px; padding: 16px 24px; z-index: 99999;
+            font-family: 'Cormorant Garamond', serif;
+            box-shadow: 0 0 30px rgba(0,255,224,0.2); backdrop-filter: blur(8px);
+            max-width: 260px;
+          `;
+          notif.innerHTML = `
+            <div style="font-family:'Cinzel Decorative',serif;font-size:0.6rem;letter-spacing:0.25em;color:var(--teal);margin-bottom:6px;">✦ angel replied ✦</div>
+            <div style="font-size:0.95rem;color:rgba(232,221,245,0.8);">"${esc(data.msg.slice(0, 60))}${data.msg.length > 60 ? '…' : ''}"</div>
+            <button onclick="this.parentElement.remove()" style="margin-top:10px;background:transparent;border:1px solid var(--teal);color:var(--teal);font-family:'Cinzel Decorative',serif;font-size:0.55rem;letter-spacing:0.2em;padding:6px 14px;border-radius:2px;cursor:pointer;">seen ✦</button>
+          `;
+          document.body.appendChild(notif);
+          setTimeout(() => notif.remove(), 8000);
+        }
+      }
+    });
+  }
+  isFirstLoad = false;
 });
+
+// notification (Angel)
+async function checkLoginScreenNotification() {
+  const lastSeen = localStorage.getItem('angel_last_seen') || '0';
+  const snapshot = await getDocs(query(collection(db, 'comments'), orderBy('id', 'desc')));
+  const newRainComments = snapshot.docs
+    .map(d => d.data())
+    .filter(c => c.name === 'Rain' && String(c.id) > lastSeen);
+
+  if (newRainComments.length > 0) {
+    const box = document.querySelector('.login-box');
+    const notif = document.createElement('div');
+    notif.style.cssText = `
+      margin-bottom: 20px; padding: 14px 20px;
+      border: 1px solid rgba(255,45,107,0.4);
+      border-radius: 6px; text-align: center;
+      background: rgba(255,45,107,0.06);
+    `;
+    notif.innerHTML = `
+      <div style="font-family:'Cinzel Decorative',serif;font-size:0.6rem;letter-spacing:0.25em;color:var(--rose);margin-bottom:6px;">✦ hey angel ✦</div>
+      <div style="font-size:0.95rem;color:rgba(232,221,245,0.8);font-style:italic;">rain left you something new 🩷</div>
+    `;
+    box.prepend(notif);
+    localStorage.setItem('angel_last_seen', String(Date.now()));
+  }
+}
+
+const rememberedUser = localStorage.getItem('confession_user');
+if (rememberedUser === 'Angel') {
+  checkLoginScreenNotification();
+}
 
 window.postComment = postComment;
 window.react = react;
